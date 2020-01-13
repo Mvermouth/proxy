@@ -1,0 +1,14 @@
+.tableWrap{
+	width: 100%;
+	height: calc(100% - 60px);
+}
+.tablePage{
+    width: 100%;
+    height: 50px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    background: white;
+    padding-right: 20px;
+    margin-top: 5px;
+}

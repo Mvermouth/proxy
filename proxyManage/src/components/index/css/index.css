@@ -1,0 +1,13 @@
+.menu{
+	width: 200px;
+	height: 100%;
+	background: #50596d;
+}
+.content{
+	width: calc(100% - 200px);
+	height: 100%;
+	background: #dcdbdb;
+}
+.flex{
+	display: flex;
+}
