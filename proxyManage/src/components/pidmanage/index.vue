@@ -5,7 +5,7 @@
       <Button type="primary" @click="getPageList">刷新</Button> 
     </div>
     <div class="tableWrap" ref="tableWrap">
-      <Table :columns="columns" :data="data" :height="height" border></Table>
+      <Table :columns="columns" :data="data" @on-row-dblclick="rowDblclick" :height="height" border></Table>
     </div>
     <div class="tablePage">
       <page-s v-on:changepage="changepage" :pageObj="pageObj"></page-s>
@@ -17,6 +17,7 @@
 import pageS from '@/assets/components/page.vue'
 import choose from './components/choose.vue'
 import groupList from './components/groupList.vue'
+import relationsOrder from '@/components/relations_order/index.vue'
 const axios = require('axios');
 import options from '../../assets/js/options'
 //Vue.component('choose',choose);
@@ -25,6 +26,7 @@ export default {
     choose
     ,pageS
     ,groupList
+    ,relationsOrder
   }
   ,data () {
     return {
@@ -85,22 +87,6 @@ export default {
             var data = await comp.getData();
             var RID = await comp.getRID();
             this.$children[0].$children[2].loading = false;
-            console.log(data);
-            console.log(that.$Modal);
-            console.log(that);
-            console.log(this)
-            // console.log(this.$children[0].$children[2].loading);
-            // this.$children[0].$children[2].loading = false;
-            // const vm = that.vmInstances.find(it => it.$children[0].classes && typeof (it.$children[0].classes) === 'string' && it.$children[0].classes.endsWith('-modal'))
-            // console.log(vm);
-            //that.$Modal.props.value = false
-            // that.$nextTick(() => {that.l = false});
-            // setTimeout(() => {
-            //     this.loading=false;
-            //     that.l = false
-            // }, 100);
-            //debugger;
-            //that.$Modal.remove()
             if(data == false || !RID){
               that.$Message.error("请输入");
             } else {
@@ -114,8 +100,6 @@ export default {
       this.$Modal.confirm(opt);
     }
     ,changepage:function(page){
-      console.log("pppppppp");
-      console.log(page);
       this.page = page;
       this.getPageList();
     }
@@ -141,7 +125,6 @@ export default {
               } else {
                 that.$Message.error(res.data.msg);
               }
-              console.log(res);
             }
 
           }
@@ -161,7 +144,6 @@ export default {
         },
         token:options.getCookie("key")
       });
-      console.log(data);
       if(data.data && data.data.results && data.data.results.length > 0){
         var pageObj = {
             total:data.data.count
@@ -171,6 +153,22 @@ export default {
         this.data = data.data.results;
         this.pageObj = pageObj;
       }
+    }
+    //查询淘宝可订单
+    ,rowDblclick:function(row){
+      console.log(row);
+      var that = this;
+      var opt = {
+          render: () => {
+            var h = that.$createElement;
+              return h('relationsOrder',{props:{
+                row
+              }})
+          }       
+          ,width:"800px" 
+      }
+      opt = options.handle(opt);
+      this.$Modal.confirm(opt);
     }
   }
   ,mounted:function(){

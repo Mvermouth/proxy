@@ -166,5 +166,20 @@ router.post("/getCommission_fee",async function(req, res, next){
   }
 });
 
+//订单列表淘宝客
+router.post("/getRelationList",async function(req, res, next){
+  try{
+    console.log(req.body.pobj);
+    var ress = await axios({
+      method: 'get'
+      ,url: `${baseReqUrl.robot}/api/tbk/tbk_relation_order/`
+      ,data: req.body.pobj
+      ,headers:{"Authorization": `Token ${req.body.token}`}
+    });    
+    res.send(ress.data);
+  } catch(e){
+    res.send({code:-1,msg:JSON.stringify(e.response.data)});
+  }
+});
 
 module.exports = router;

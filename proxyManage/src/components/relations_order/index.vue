@@ -1,7 +1,7 @@
 <template>
   <div class="index_full pd5">
     <div class="tableWrap" ref="tableWrap">
-      <Table @on-row-dblclick="rowDblclick" :columns="columns" :data="data" :height="height" border></Table>
+      <Table :columns="columns" :data="data" :height="height" border></Table>
     </div>
     <div class="tablePage">
       <page-s v-on:changepage="changepage" :pageObj="pageObj"></page-s>
@@ -14,7 +14,12 @@ import pageS from '@/assets/components/page.vue'
 const axios = require('axios');
 import options from '../../assets/js/options'
 export default {
-  components:{
+   props:{
+    row:{
+      type:Object 
+    }
+   }
+  ,components:{
     pageS
   }
 	,data () {
@@ -27,17 +32,44 @@ export default {
               align: 'center'
           },
           {
-              title: '淘宝订单',
-              key: 'trade_id'
+              title: '标题',
+              key: 'item_title',
+              width: 230
           },
           {
-              title: '收入',
-              key: 'fee'
+              title: '商品图片',
+              key: 'item_img',
+              width:100,
+              render:(h,params) =>{
+                return h("img",{
+                  attrs:{
+                    src:params.row.item_img
+                    ,width:100
+                    ,height:100
+                  }
+                })
+              }
+          },
+          {
+              title: '付款预估收入',
+              key: 'pub_share_pre_fee'
+          },
+          {
+              title: '订单状态',
+              key: 'tk_status_text'
+          },
+          {
+              title: '原价格',
+              key: 'item_price'
+          },
+          {
+              title: '付款价格',
+              key: 'alipay_total_price'
           },
           {
               title: '创建时间',
               key: 'create_time'
-          }
+          }            
       ],
       data: []
       ,height:0
@@ -48,10 +80,11 @@ export default {
   }
   ,methods:{
     getPageList:async function(){
-      var data  = await axios.post("/api/getCommission_fee",{
+      var data  = await axios.post("/api/getRelationList",{
         pobj:{
           page:this.page
           ,page_size:this["page-size"]
+          ,"relation_id":this.row.rid
         },
         token:options.getCookie("key")
       });
@@ -74,6 +107,7 @@ export default {
     }
   }
   ,mounted:function(){
+    console.log(this.row);
     this.$nextTick(function () {
       this.height = this.$refs.tableWrap.clientHeight;
       this.getPageList();

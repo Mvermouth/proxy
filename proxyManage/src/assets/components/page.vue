@@ -17,12 +17,11 @@ export default {
   	}
   }
   ,mounted:function(){
-	console.log(this.pageObj);
+
   }
   ,methods:{
   	changePage:function(page){
-		console.log(page);
-		this.$emit("changepage",page);
+		 this.$emit("changepage",page);
   	}
   }
 }

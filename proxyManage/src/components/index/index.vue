@@ -1,7 +1,7 @@
 <template>
   <div class="index_full flex">
     <div class="menu">
-        <Menu theme="dark" active-name="manage-pidmanage" :open-names="['manage','account']" width="100%" @on-select="onselect">
+        <Menu theme="dark" active-name="manage-pidmanage" :open-names="['manage']" width="100%" @on-select="onselect">
             <Submenu name="manage">
                 <template slot="title">
                     <Icon type="ios-paper" />
@@ -9,6 +9,7 @@
                 </template>
                 <MenuItem name="manage-pidmanage">pid管理</MenuItem>
                 <MenuItem name="manage-incomemanage">收益列表</MenuItem>
+<!--                 <MenuItem name="manage-relations_order">淘宝订单</MenuItem> -->
             </Submenu>
 <!--             <Submenu name="account">
                 <template slot="title">
@@ -35,7 +36,6 @@ export default {
   }
   ,methods:{
     onselect:function(name){
-      console.log(name);
       if(name == this.currModule) return;
       this.currModule = name;
       var url = name.split("-")[1];

@@ -59,20 +59,13 @@ export default {
     }
   }
   ,mounted:function(){
-	console.log(this.rows);
-	this.$nextTick(function () {
-		this.data = this.rows;
-		// if(this.rows && this.rows.length > 0){
-		// 	for(var i = 0;i < this.rows.length;i++){
-		// 		this.data.push(this.rows[i].group);
-		// 	}
-		// }
-	})
+  	this.$nextTick(function () {
+  		this.data = this.rows;
+  	})
   }
   ,methods:{
   	select:function(selections,row){
-		console.log(selections);
-		this.selections = selections;
+		  this.selections = selections;
   	}
   	,getSelections:function(){
   		return this.selections;

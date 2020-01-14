@@ -12,6 +12,8 @@ import Pidmanage from '@/components/pidmanage/index'
 import Incomemanage from '@/components/incomemanage/index'
 //账户管理
 import Accountmanage from '@/components/accountmanage/index'
+//b淘宝客订单
+//import Relations_order from '@/components/relations_order/index'
 import NotFound from '@/components/notFound/index'
 /*页面组件*/
 

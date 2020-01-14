@@ -126,17 +126,7 @@ export default {
     }
   }
   ,mounted:function(){
-    // console.log(process);
-    // console.log(process.env.API_HOST);
-    // console.log(process.env);
-    //process.env.API_HOST + 
-    // axios.get('/api/fadan/job/')
-    //   .then(function (res) {
-    //       console.log(res);
-    //   })
-    //   .catch(function (error) {
 
-    //   });
   }
 }
 </script>

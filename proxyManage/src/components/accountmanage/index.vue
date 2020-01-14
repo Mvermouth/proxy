@@ -44,7 +44,7 @@ export default {
   }
   ,methods:{
   	handleEdit:function(){
-  		console.log(this.formPassword);
+
   	}
   }
 }
