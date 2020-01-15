@@ -169,7 +169,6 @@ router.post("/getCommission_fee",async function(req, res, next){
 //订单列表淘宝客
 router.post("/getRelationList",async function(req, res, next){
   try{
-    console.log(req.body.pobj);
     var ress = await axios({
       method: 'get'
       ,url: `${baseReqUrl.robot}/api/tbk/tbk_relation_order/`

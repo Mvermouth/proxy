@@ -12,7 +12,7 @@ export default {
     }
   }
   ,mounted:function(){
-
+	this.$router.push(`/login`);
   }
 }
 </script>
