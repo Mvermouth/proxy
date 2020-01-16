@@ -152,6 +152,10 @@ export default {
         };
         this.data = data.data.results;
         this.pageObj = pageObj;
+      } else if(data.data && data.data.results && data.data.results.length == 0){
+         this.$Message.warning("没有数据");
+      } else {
+        this.$Message.error("查询失败");
       }
     }
     //查询淘宝可订单

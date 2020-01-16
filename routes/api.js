@@ -106,7 +106,11 @@ router.post("/binding",async function(req, res, next){
         ,"pgid": req.body.data[i].platformGid
         ,"group_name": req.body.data[i].name
         ,"nickname":req.body.data[i].nickname
+        ,ppuid:req.body.data[i].ppuid
       }     
+
+      console.log(sendData);
+
       var params = {
          method: "post"
         ,url:`${baseReqUrl.robot}/api/tbk/binding/`
@@ -132,13 +136,18 @@ router.post("/binding",async function(req, res, next){
 })
 //绑定列表
 router.post("/getBinding",async function(req, res, next){
-    var ress = await axios({
-      method: 'get'
-      ,url: `${baseReqUrl.robot}/api/tbk/binding/`
-      ,data: req.body.pobj
-      ,headers:{"Authorization": `Token ${req.body.token}`}
-    });    
-    res.send(ress.data);
+    try{
+      var ress = await axios({
+        method: 'get'
+        ,url: `${baseReqUrl.robot}/api/tbk/binding/`
+        ,data: req.body.pobj
+        ,headers:{"Authorization": `Token ${req.body.token}`}
+      });    
+      res.send(ress.data);
+    }catch(e){
+      logger.error('错误:"%s"绑定列表结果:"%s"',JSON.stringify(e.response.data));
+      res.send(false);
+    }
 });
 //收益列表
 router.post("/getCommission_fee",async function(req, res, next){

@@ -22,6 +22,7 @@ export default {
             align: 'center',
             render: (h, params) => {
               let id = params.row.id;
+              let disabled = params.row.disabled;
               let flag = false;
               if (this.currentChoose === id) {
                 flag = true
@@ -34,6 +35,9 @@ export default {
                   props: {
                     value: flag
                   },
+                  attrs:{
+                    disabled
+                  },
                   on: {
                     'on-change': () => {
                       self.currentChoose = id;
@@ -44,6 +48,10 @@ export default {
               ])
             }
           },
+          {
+              title: '禁选原因',
+              key: 'banreson'
+          },          
           {
               title: '群名',
               key: 'name'

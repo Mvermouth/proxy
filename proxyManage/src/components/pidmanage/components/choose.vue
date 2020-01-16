@@ -7,6 +7,7 @@
 
 <script>
 const axios = require('axios');
+import options from '../../../assets/js/options'
 export default {
   data () {
     return {
@@ -25,7 +26,7 @@ export default {
           "ownerCustomID":{"EQ":this.value}
         }
       }
-      var res = await axios.post("/im/search-srv/im_group_views/page",{customID:this.value});
+      var res = await axios.post("/im/search-srv/im_group_views/page",{customID:this.value,token:options.getCookie("key")});
       return res;
     }
     ,getRID:function(){
