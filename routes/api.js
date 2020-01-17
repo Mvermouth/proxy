@@ -137,13 +137,30 @@ router.post("/binding",async function(req, res, next){
 //绑定列表
 router.post("/getBinding",async function(req, res, next){
     try{
-      var ress = await axios({
+      //获取reseller列表,带token过去,后端帮过滤
+      var resellers = await axios({
         method: 'get'
-        ,url: `${baseReqUrl.robot}/api/tbk/binding/`
-        ,data: req.body.pobj
+        ,url: `${baseReqUrl.robot}/api/tbk/reseller/`
+        //,data: req.body.pobj
         ,headers:{"Authorization": `Token ${req.body.token}`}
-      });    
-      res.send(ress.data);
+      }); 
+      if(resellers && resellers.data && resellers.data.result.length == 1){
+        logger.info('resellerId:"%s"',JSON.stringify(resellers.data.result[0]));
+        var reseller_id = resellers.data.result[0].id;
+        var ress = await axios.get(`${baseReqUrl.robot}/api/tbk/binding/?reseller_id=${reseller_id}&page_size=${req.body.pobj.page_size}&page=${req.body.pobj.page}`,{
+          headers:{"Authorization": `Token ${req.body.token}`}
+        });
+        // var ress = await axios({
+        //   method: 'get'
+        //   ,url: `${baseReqUrl.robot}/api/tbk/binding/?reseller_id=${reseller_id}`
+        //   ,data: req.body.pobj
+        //   ,headers:{"Authorization": `Token ${req.body.token}`}
+        // });    
+        res.send(ress.data);        
+      } else {
+        res.send(false);
+      }
+
     }catch(e){
       logger.error('错误:"%s"绑定列表结果:"%s"',JSON.stringify(e.response.data));
       res.send(false);
@@ -162,15 +179,21 @@ router.post("/getCommission_fee",async function(req, res, next){
     if(resellers && resellers.data && resellers.data.result.length == 1){
       var reseller = resellers.data.result[0];
       req.body.pobj.user_id = reseller.user_id;
-      var ress = await axios({
-        method: 'get'
-        ,url: `${baseReqUrl.robot}/api/tbk/commission_fee/`
-        ,data: req.body.pobj
-        ,headers:{"Authorization": `Token ${req.body.token}`}
-      });    
+
+      var ress = await axios.get(`${baseReqUrl.robot}/api/tbk/tbk_relation_order/?page_size=${req.body.pobj.page_size}&page=${req.body.pobj.page}&user_id=${req.body.pobj.user_id}`,{
+        headers:{"Authorization": `Token ${req.body.token}`}
+      });
+
+      // var ress = await axios({
+      //   method: 'get'
+      //   ,url: `${baseReqUrl.robot}/api/tbk/commission_fee/`
+      //   ,data: req.body.pobj
+      //   ,headers:{"Authorization": `Token ${req.body.token}`}
+      // });    
       res.send(ress.data);
     }
   } catch(e){
+    logger.error('错误:"%s"收益列表:"%s"',JSON.stringify(e.response.data));
     res.send({code:-1,msg:JSON.stringify(e.response.data)});
   }
 });
@@ -178,14 +201,18 @@ router.post("/getCommission_fee",async function(req, res, next){
 //订单列表淘宝客
 router.post("/getRelationList",async function(req, res, next){
   try{
-    var ress = await axios({
-      method: 'get'
-      ,url: `${baseReqUrl.robot}/api/tbk/tbk_relation_order/`
-      ,data: req.body.pobj
-      ,headers:{"Authorization": `Token ${req.body.token}`}
-    });    
+    var ress = await axios.get(`${baseReqUrl.robot}/api/tbk/tbk_relation_order/?page_size=${req.body.pobj.page_size}&page=${req.body.pobj.page}`,{
+      headers:{"Authorization": `Token ${req.body.token}`}
+    });
+    // var ress = await axios({
+    //   method: 'get'
+    //   ,url: `${baseReqUrl.robot}/api/tbk/tbk_relation_order/`
+    //   ,data: req.body.pobj
+    //   ,headers:{"Authorization": `Token ${req.body.token}`}
+    // });    
     res.send(ress.data);
   } catch(e){
+    logger.error('错误:"%s"订单列表淘宝客:"%s"',JSON.stringify(e.response.data));
     res.send({code:-1,msg:JSON.stringify(e.response.data)});
   }
 });
