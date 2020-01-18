@@ -13,7 +13,10 @@ var apiRouter = require('./routes/api');
 var ejs = require("ejs");
 
 var app = express();
-app.use(compression());
+app.use(compression({filter:(req,res)=>{
+	if (req.headers['x-no-compression']) return false;
+	return true;
+}}));
 // view engine setup
 app.set('views', path.join(__dirname, 'views/dist'));
 app.engine("html",ejs.__express);
