@@ -46,8 +46,7 @@ router.post('/search-srv/im_group_views/page', async function(req, res, next) {
             //查询机器人列表
             var robots = await axios({
               method:"get"
-              ,url:`${baseReqUrl.robot}/api/fadan/bot/`
-              ,data: {page_size:1000}
+              ,url:`${baseReqUrl.robot}/api/fadan/bot/?page_size=1000`
               ,headers:{"Authorization": `Token ${req.body.token}`}
             });
             var temp = {};

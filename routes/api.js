@@ -149,13 +149,7 @@ router.post("/getBinding",async function(req, res, next){
         var reseller_id = resellers.data.result[0].id;
         var ress = await axios.get(`${baseReqUrl.robot}/api/tbk/binding/?reseller_id=${reseller_id}&page_size=${req.body.pobj.page_size}&page=${req.body.pobj.page}`,{
           headers:{"Authorization": `Token ${req.body.token}`}
-        });
-        // var ress = await axios({
-        //   method: 'get'
-        //   ,url: `${baseReqUrl.robot}/api/tbk/binding/?reseller_id=${reseller_id}`
-        //   ,data: req.body.pobj
-        //   ,headers:{"Authorization": `Token ${req.body.token}`}
-        // });    
+        });  
         res.send(ress.data);        
       } else {
         res.send(false);
@@ -182,14 +176,7 @@ router.post("/getCommission_fee",async function(req, res, next){
 
       var ress = await axios.get(`${baseReqUrl.robot}/api/tbk/tbk_relation_order/?page_size=${req.body.pobj.page_size}&page=${req.body.pobj.page}&user_id=${req.body.pobj.user_id}`,{
         headers:{"Authorization": `Token ${req.body.token}`}
-      });
-
-      // var ress = await axios({
-      //   method: 'get'
-      //   ,url: `${baseReqUrl.robot}/api/tbk/commission_fee/`
-      //   ,data: req.body.pobj
-      //   ,headers:{"Authorization": `Token ${req.body.token}`}
-      // });    
+      });  
       res.send(ress.data);
     }
   } catch(e){
@@ -203,13 +190,7 @@ router.post("/getRelationList",async function(req, res, next){
   try{
     var ress = await axios.get(`${baseReqUrl.robot}/api/tbk/tbk_relation_order/?page_size=${req.body.pobj.page_size}&page=${req.body.pobj.page}`,{
       headers:{"Authorization": `Token ${req.body.token}`}
-    });
-    // var ress = await axios({
-    //   method: 'get'
-    //   ,url: `${baseReqUrl.robot}/api/tbk/tbk_relation_order/`
-    //   ,data: req.body.pobj
-    //   ,headers:{"Authorization": `Token ${req.body.token}`}
-    // });    
+    });  
     res.send(ress.data);
   } catch(e){
     logger.error('错误:"%s"订单列表淘宝客:"%s"',JSON.stringify(e.response.data));

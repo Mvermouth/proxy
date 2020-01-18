@@ -31,6 +31,10 @@ export default {
               key: 'trade_id'
           },
           {
+              title: '预计收入',
+              key: 'pub_share_pre_fee'
+          },
+          {
               title: '收入',
               key: 'fee'
           },
