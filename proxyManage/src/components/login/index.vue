@@ -1,5 +1,5 @@
 <template>
-  <div class="login-index">
+  <div class="login-index" ref="login_ref">
     <div class="formWrap">
       <Tabs :value="value" @on-click="c">
           <TabPane label="登录" name="login">
@@ -126,7 +126,10 @@ export default {
     }
   }
   ,mounted:function(){
-
+    //cover
+    if(window.innerWidth < 720){
+      this.$refs.login_ref.style["background-size"] = "cover";
+    }
   }
 }
 </script>
