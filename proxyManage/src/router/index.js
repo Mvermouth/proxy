@@ -10,6 +10,8 @@ import Index from '@/components/index/index'
 import Pidmanage from '@/components/pidmanage/index'
 //收益列表
 import Incomemanage from '@/components/incomemanage/index'
+//邀请码
+import Invitecode from '@/components/invitecode/index'
 //账户管理
 import Accountmanage from '@/components/accountmanage/index'
 //b淘宝客订单
@@ -49,6 +51,9 @@ export default new Router({
       },{
         path:"accountmanage",
         component:Accountmanage
+      },{
+        path:"invitecode",
+        component:Invitecode
       }]
     },{path:'*',component:NotFound}
   ]

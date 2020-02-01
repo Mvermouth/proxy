@@ -7,6 +7,7 @@ logger.level = 'debug';
 logger.debug("Some debug messages");
 const fs = require('fs')
 const baseReqUrl = JSON.parse(fs.readFileSync(`${__dirname}/../configs/baseUrl.json`));
+var uuid = require('../tools/uuid.js');
 /*注册逻辑:
 1.验证 邀请码是否有效 invitation_code
 2.注册账号,返回id registration
@@ -109,8 +110,6 @@ router.post("/binding",async function(req, res, next){
         ,ppuid:req.body.data[i].ppuid
       }     
 
-      console.log(sendData);
-
       var params = {
          method: "post"
         ,url:`${baseReqUrl.robot}/api/tbk/binding/`
@@ -195,6 +194,75 @@ router.post("/getRelationList",async function(req, res, next){
   } catch(e){
     logger.error('错误:"%s"订单列表淘宝客:"%s"',JSON.stringify(e.response.data));
     res.send({code:-1,msg:JSON.stringify(e.response.data)});
+  }
+});
+
+//创建邀请码
+router.post("/createCode",async function(req,res,next){
+  try{
+    var resellers = await axios({
+      method: 'get'
+      ,url: `${baseReqUrl.robot}/api/tbk/reseller/`
+      //,data: req.body.pobj
+      ,headers:{"Authorization": `Token ${req.body.token}`}
+    });  
+    if(resellers && resellers.data && resellers.data.result.length == 1){
+      var reseller = resellers.data.result[0];
+      for(var i = 0;i < req.body.totel;i++){
+        var code = await uuid.getUuid(req.body.token);
+        logger.info('创建邀请码:"%s"',code);
+        var params = {
+          code
+          ,create_by:reseller.id
+          ,status:0
+          ,reseller_id:reseller.id
+        }
+        var uuidRes = await axios({
+          method: 'post'
+          ,url: `${baseReqUrl.robot}/api/tbk/invitation_code/`
+          ,headers:{"Authorization": `Token ${req.body.token}`}
+          ,data: params
+        });
+      }
+      res.send({
+        code:0
+      });
+    }    
+  } catch(e){
+    logger.error('错误:"%s"创建邀请码:"%s"',JSON.stringify(e));
+    res.send({code:-1,msg:JSON.stringify(e)});
+  }
+})
+
+//邀请码列表
+router.post("/getCode",async function(req, res, next){
+  try{
+    var resellers = await axios({
+      method: 'get'
+      ,url: `${baseReqUrl.robot}/api/tbk/reseller/`
+      ,headers:{"Authorization": `Token ${req.body.token}`}
+    });  
+    if(resellers && resellers.data && resellers.data.result.length == 1){
+      var reseller = resellers.data.result[0];
+      var ress = await axios.get(`${baseReqUrl.robot}/api/tbk/invitation_code/?page_size=${req.body.pobj.page_size}&page=${req.body.pobj.page}&reseller_id=${reseller.id}`,{
+        headers:{"Authorization": `Token ${req.body.token}`}
+      });  
+      if(ress.data && ress.data.results){
+        var hash = {
+          0:"未注册"
+          ,1:"已注册"
+        }
+        for(var i = 0;i < ress.data.results.length;i++){
+          ress.data.results[i].statusText = hash[ress.data.results[i].status];
+        }
+      }
+      res.send(ress.data);
+    } else {
+      res.send(false);
+    }
+  } catch(e){
+    logger.error('错误:"%s"邀请码列表:"%s"',JSON.stringify(e));
+    res.send({code:-1,msg:JSON.stringify(e)});
   }
 });
 
