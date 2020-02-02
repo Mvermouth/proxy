@@ -82,7 +82,7 @@ export default {
         this.$Modal.confirm(opt);
   	}
   	,createCode:async function(totel){
-  		var res = await axios.post("/api/createCode",{totel,token:options.getCookie("key")});
+  		var res = await axios.post("/api/createCode",{totel,token:options.getCookie("key"),user:options.getCookie("user")});
       if(res && res.data && res.data.code == 0){
         this.$Message.success("创建成功");
       } else {

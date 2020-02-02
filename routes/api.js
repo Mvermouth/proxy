@@ -16,12 +16,13 @@ var uuid = require('../tools/uuid.js');
 router.post('/reg', async function(req, res, next) {
   //验证邀请码
   if(req.body && req.body.ratio){
-    logger.info('邀请码:"%s"',req.body.ratio);
-    var data = await axios.get(`${baseReqUrl.robot}/api/tbk/invitation_code/?code=${req.body.ratio}&status=0&deleted=false`);
-    logger.info('邀请码请求验证结果:"%s"',data.status);
-    if(data.status == 200 && data.data && data.data.count == 1){
+    var msg = "";
+    try{
+      logger.info('邀请码:"%s"',req.body.ratio);
+      var data = await axios.get(`${baseReqUrl.robot}/api/tbk/invitation_code/?code=${req.body.ratio}&status=0&deleted=false`);
+      logger.info('邀请码请求验证结果:"%s"',data.status);
       logger.info('邀请码结果:"%s"',JSON.stringify(data.data.results));
-      try{
+      if(data.status == 200 && data.data && data.data.count == 1){
         var regRes = await axios.post(`${baseReqUrl.robot}/api/auth/registration/`,{
           username:req.body.user
           ,password:req.body.password
@@ -46,21 +47,24 @@ router.post('/reg', async function(req, res, next) {
             return;
           } else {
             logger.error('reseller验证结果:"%s"',lastRes && lastRes.status);
+            msg = lastRes && lastRes.status;
           } 
         } else {
           logger.error('注册请求验证结果:"%s"',regRes && regRes.status);
-        }        
-      } catch(e){
-        logger.error('注册请求验证结果:"%s"',e);
-      }
-    } else {
-      logger.error('注册请求验证结果:"%s"',data.status);
+          msg = regRes && regRes.status;
+        } 
+      } else {
+        logger.error('邀请码:"%s"',req.body.ratio + "-有问题");
+      }      
+    } catch(e){
+      logger.error('注册请求验证结果:"%s"',e);
+      msg = e;
     }
   }
-    res.send({
-      code:-1
-      ,msg:"注册失败"
-    })
+  res.send({
+    code:-1
+    ,msg:"注册失败-" + msg
+  })
 });
 
 //登录
@@ -85,7 +89,7 @@ router.post("/login",async function(req, res, next){
       logger.error('登录请求验证结果:"%s"',e);
       res.send({
         code:-1
-        ,msg:"登录失败"
+        ,msg:"登录失败-" + e
       })
     }  
   }
@@ -210,10 +214,10 @@ router.post("/createCode",async function(req,res,next){
       var reseller = resellers.data.result[0];
       for(var i = 0;i < req.body.totel;i++){
         var code = await uuid.getUuid(req.body.token);
-        logger.info('创建邀请码:"%s"',code);
+        logger.info(`用户 ${req.body.user} 创建邀请码:"%s"`,code);
         var params = {
           code
-          ,create_by:reseller.id
+          ,create_by:req.body.user
           ,status:0
           ,reseller_id:reseller.id
         }

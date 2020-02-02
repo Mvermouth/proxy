@@ -30,7 +30,7 @@
                     </Input>
                 </FormItem>
                 <FormItem prop="ratio">
-                    <Input type="password" v-model="formReg.ratio" placeholder="邀请码">
+                    <Input type="text" v-model="formReg.ratio" placeholder="邀请码">
                         <Icon type="ios-lock-outline" slot="prepend"></Icon>
                     </Input>
                 </FormItem>
@@ -94,6 +94,7 @@ export default {
             axios.post("/api/login",this.formLogin).then(function(res){
               if(res && res.status == 200 && res.data && res.data.code == 0){
                 options.setCookie("key",res.data.data.key);
+                options.setCookie("user",that.formLogin.user);
                 that.$Message.success(res.data && res.data.msg);
                 that.$router.push(`/index/pidmanage`);
               } else {
