@@ -175,9 +175,8 @@ router.post("/getCommission_fee",async function(req, res, next){
     });  
     if(resellers && resellers.data && resellers.data.result.length == 1){
       var reseller = resellers.data.result[0];
-      req.body.pobj.user_id = reseller.user_id;
-
-      var ress = await axios.get(`${baseReqUrl.robot}/api/tbk/tbk_relation_order/?page_size=${req.body.pobj.page_size}&page=${req.body.pobj.page}&user_id=${req.body.pobj.user_id}`,{
+      req.body.pobj.reseller_id = reseller.id;
+      var ress = await axios.get(`${baseReqUrl.robot}/api/tbk/tbk_relation_order/?page_size=${req.body.pobj.page_size}&page=${req.body.pobj.page}&reseller_id=${req.body.pobj.reseller_id}`,{
         headers:{"Authorization": `Token ${req.body.token}`}
       });  
       res.send(ress.data);
