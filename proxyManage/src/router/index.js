@@ -12,6 +12,10 @@ import Pidmanage from '@/components/pidmanage/index'
 import Incomemanage from '@/components/incomemanage/index'
 //邀请码
 import Invitecode from '@/components/invitecode/index'
+//收益分成
+import Revenueshare from '@/components/revenueshare/index'
+//群主收益
+import Ownerincome from '@/components/ownerincome/index'
 //账户管理
 import Accountmanage from '@/components/accountmanage/index'
 //b淘宝客订单
@@ -54,6 +58,12 @@ export default new Router({
       },{
         path:"invitecode",
         component:Invitecode
+      },{
+        path:"revenueshare",
+        component:Revenueshare
+      },{
+        path:"ownerincome",
+        component:Ownerincome
       }]
     },{path:'*',component:NotFound}
   ]

@@ -8,8 +8,10 @@
                     管理
                 </template>
                 <MenuItem name="manage-pidmanage">pid管理</MenuItem>
-                <MenuItem name="manage-incomemanage">收益列表</MenuItem>
                 <MenuItem name="manage-invitecode">邀请码</MenuItem>
+                <MenuItem name="manage-incomemanage">收益列表</MenuItem>
+                <MenuItem name="manage-revenueshare">收益分成</MenuItem>
+                <MenuItem name="manage-ownerincome">群主收益</MenuItem>
 <!--                 <MenuItem name="manage-relations_order">淘宝订单</MenuItem> -->
             </Submenu>
 <!--             <Submenu name="account">

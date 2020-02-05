@@ -8,6 +8,25 @@ logger.debug("Some debug messages");
 const fs = require('fs')
 const baseReqUrl = JSON.parse(fs.readFileSync(`${__dirname}/../configs/baseUrl.json`));
 var uuid = require('../tools/uuid.js');
+var funcObj = {};
+funcObj.getReseller = async function(token){
+  try{
+    var resellers = await axios({
+      method: 'get'
+      ,url: `${baseReqUrl.robot}/api/tbk/reseller/`
+      ,headers:{"Authorization": `Token ${token}`}
+    });  
+    if(resellers && resellers.data && resellers.data.result.length == 1){
+      logger.info('resellerId:"%s"',JSON.stringify(resellers.data.result[0]));
+      return resellers.data.result[0];
+    } else {
+      return false;
+    }
+  } catch (e){
+    logger.error('getReseller:"%s"',e);
+    return false;
+  }
+}
 /*注册逻辑:
 1.验证 邀请码是否有效 invitation_code
 2.注册账号,返回id registration
@@ -141,15 +160,9 @@ router.post("/binding",async function(req, res, next){
 router.post("/getBinding",async function(req, res, next){
     try{
       //获取reseller列表,带token过去,后端帮过滤
-      var resellers = await axios({
-        method: 'get'
-        ,url: `${baseReqUrl.robot}/api/tbk/reseller/`
-        //,data: req.body.pobj
-        ,headers:{"Authorization": `Token ${req.body.token}`}
-      }); 
-      if(resellers && resellers.data && resellers.data.result.length == 1){
-        logger.info('resellerId:"%s"',JSON.stringify(resellers.data.result[0]));
-        var reseller_id = resellers.data.result[0].id;
+      var resellers = await funcObj.getReseller(req.body.token);
+      if(resellers){
+        var reseller_id = resellers.id;
         var ress = await axios.get(`${baseReqUrl.robot}/api/tbk/binding/?reseller_id=${reseller_id}&page_size=${req.body.pobj.page_size}&page=${req.body.pobj.page}`,{
           headers:{"Authorization": `Token ${req.body.token}`}
         });  
@@ -167,14 +180,9 @@ router.post("/getBinding",async function(req, res, next){
 router.post("/getCommission_fee",async function(req, res, next){
   try{
     //获取reseller列表,带token过去,后端帮过滤
-    var resellers = await axios({
-      method: 'get'
-      ,url: `${baseReqUrl.robot}/api/tbk/reseller/`
-      //,data: req.body.pobj
-      ,headers:{"Authorization": `Token ${req.body.token}`}
-    });  
-    if(resellers && resellers.data && resellers.data.result.length == 1){
-      var reseller = resellers.data.result[0];
+    var resellers = await funcObj.getReseller(req.body.token); 
+    if(resellers){
+      var reseller = resellers;
       req.body.pobj.reseller_id = reseller.id;
       var ress = await axios.get(`${baseReqUrl.robot}/api/tbk/tbk_relation_order/?page_size=${req.body.pobj.page_size}&page=${req.body.pobj.page}&reseller_id=${req.body.pobj.reseller_id}`,{
         headers:{"Authorization": `Token ${req.body.token}`}
@@ -203,14 +211,9 @@ router.post("/getRelationList",async function(req, res, next){
 //创建邀请码
 router.post("/createCode",async function(req,res,next){
   try{
-    var resellers = await axios({
-      method: 'get'
-      ,url: `${baseReqUrl.robot}/api/tbk/reseller/`
-      //,data: req.body.pobj
-      ,headers:{"Authorization": `Token ${req.body.token}`}
-    });  
-    if(resellers && resellers.data && resellers.data.result.length == 1){
-      var reseller = resellers.data.result[0];
+    var resellers = await funcObj.getReseller(req.body.token); 
+    if(resellers){
+      var reseller = resellers;
       for(var i = 0;i < req.body.totel;i++){
         var code = await uuid.getUuid(req.body.token);
         logger.info(`用户 ${req.body.user} 创建邀请码:"%s"`,code);
@@ -240,13 +243,9 @@ router.post("/createCode",async function(req,res,next){
 //邀请码列表
 router.post("/getCode",async function(req, res, next){
   try{
-    var resellers = await axios({
-      method: 'get'
-      ,url: `${baseReqUrl.robot}/api/tbk/reseller/`
-      ,headers:{"Authorization": `Token ${req.body.token}`}
-    });  
-    if(resellers && resellers.data && resellers.data.result.length == 1){
-      var reseller = resellers.data.result[0];
+    var resellers = await funcObj.getReseller(req.body.token);  
+    if(resellers){
+      var reseller = resellers;
       var ress = await axios.get(`${baseReqUrl.robot}/api/tbk/invitation_code/?page_size=${req.body.pobj.page_size}&page=${req.body.pobj.page}&reseller_id=${reseller.id}`,{
         headers:{"Authorization": `Token ${req.body.token}`}
       });  
@@ -267,6 +266,61 @@ router.post("/getCode",async function(req, res, next){
     logger.error('错误:"%s"邀请码列表:"%s"',JSON.stringify(e));
     res.send({code:-1,msg:JSON.stringify(e)});
   }
+});
+
+//收益分成
+router.post("/reseller_fee",async function(req, res, next){
+  try{
+    var resellers = await funcObj.getReseller(req.body.token);
+    if(resellers){
+      var page = await axios({
+        method: 'post'
+        ,url: `${baseReqUrl.robot}/api/tbk/reseller_fee/page/`
+        ,headers:{"Authorization": `Token ${req.body.token}`}
+        ,data: {
+          "filters":{
+            "reseller_id":{
+              "EQ":resellers.id
+            }
+          }
+          ,"pageNo":req.body.pobj.page
+          ,"pageSize":req.body.pobj.page_size
+        }
+      });
+      res.send(page.data);
+    } else {
+      res.send(false);
+    }
+  } catch(e){
+    logger.error('错误:"%s"收益分成:"%s"',JSON.stringify(e));
+    res.send(false);
+  } 
+});
+
+//群主收益
+router.post("/relation_fee",async function(req, res, next){
+  try{
+    var resellers = await funcObj.getReseller(req.body.token);
+    if(resellers){
+      if(!req.body.pobj.filters) res.send(false);
+      var page = await axios({
+        method: 'post'
+        ,url: `${baseReqUrl.robot}/api/tbk/relation_fee/page/`
+        ,headers:{"Authorization": `Token ${req.body.token}`}
+        ,data: {
+          "filters":req.body.pobj.filters
+          ,"pageNo":req.body.pobj.page
+          ,"pageSize":req.body.pobj.page_size
+        }
+      });
+      res.send(page.data);
+    } else {
+      res.send(false);
+    }
+  } catch(e){
+    logger.error('错误:"%s"收益分成:"%s"',JSON.stringify(e));
+    res.send(false);
+  } 
 });
 
 module.exports = router;
