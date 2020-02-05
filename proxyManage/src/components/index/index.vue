@@ -11,7 +11,7 @@
                 <MenuItem name="manage-invitecode">邀请码</MenuItem>
                 <MenuItem name="manage-incomemanage">收益列表</MenuItem>
                 <MenuItem name="manage-revenueshare">收益分成</MenuItem>
-                <MenuItem name="manage-ownerincome">群主收益</MenuItem>
+                <!-- <MenuItem name="manage-ownerincome">群主收益</MenuItem> -->
 <!--                 <MenuItem name="manage-relations_order">淘宝订单</MenuItem> -->
             </Submenu>
 <!--             <Submenu name="account">
@@ -34,6 +34,7 @@
 
 <script>
 const axios = require('axios');
+import options from '../../assets/js/options';
 export default {
   data () {
     return {
@@ -73,7 +74,10 @@ export default {
     }
   }
   ,mounted:function(){
-      this.judgeIsPhone();
+    if(!options.getCookie("key")){
+      this.$router.push(`/login`);
+    }
+    this.judgeIsPhone();
   }
 }
 </script>

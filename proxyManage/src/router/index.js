@@ -34,7 +34,7 @@ Vue.use(Router)
 
 export default new Router({
   routes: [
-    ,{
+    {
       path: '/login',
       name: 'login',
       components: {
@@ -61,10 +61,13 @@ export default new Router({
       },{
         path:"revenueshare",
         component:Revenueshare
-      },{
-        path:"ownerincome",
-        component:Ownerincome
       }]
+    },{
+      path: '/ownerincome',
+      name: 'ownerincome',
+      components: {
+        default:Ownerincome
+      }
     },{path:'*',component:NotFound}
   ]
 })

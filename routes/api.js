@@ -300,23 +300,18 @@ router.post("/reseller_fee",async function(req, res, next){
 //群主收益
 router.post("/relation_fee",async function(req, res, next){
   try{
-    var resellers = await funcObj.getReseller(req.body.token);
-    if(resellers){
-      if(!req.body.pobj.filters) res.send(false);
-      var page = await axios({
-        method: 'post'
-        ,url: `${baseReqUrl.robot}/api/tbk/relation_fee/page/`
-        ,headers:{"Authorization": `Token ${req.body.token}`}
-        ,data: {
-          "filters":req.body.pobj.filters
-          ,"pageNo":req.body.pobj.page
-          ,"pageSize":req.body.pobj.page_size
-        }
-      });
-      res.send(page.data);
-    } else {
-      res.send(false);
-    }
+    if(!req.body.pobj.filters) res.send(false);
+    var page = await axios({
+      method: 'post'
+      ,url: `${baseReqUrl.robot}/api/tbk/relation_fee/page/`
+      //,headers:{"Authorization": `Token ${req.body.token}`}
+      ,data: {
+        "filters":req.body.pobj.filters
+        ,"pageNo":req.body.pobj.page
+        ,"pageSize":req.body.pobj.page_size
+      }
+    });
+    res.send(page.data);
   } catch(e){
     logger.error('错误:"%s"收益分成:"%s"',JSON.stringify(e));
     res.send(false);

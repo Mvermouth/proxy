@@ -79,8 +79,8 @@ export default {
               EQ:this.RID
             }
           }
-        },
-        token:options.getCookie("key")
+        }
+        //token:options.getCookie("key")
       });
       if(data.data && data.data.results && data.data.results.length > 0){
         var pageObj = {
