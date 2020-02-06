@@ -93,6 +93,7 @@ export default {
             total:data.data.count
             ,current:this.page
             ,"page-size":this["page-size"]
+            ,rid:this.row.rid
         };
         this.data = data.data.results;
         this.pageObj = pageObj;
@@ -107,7 +108,6 @@ export default {
     }
   }
   ,mounted:function(){
-    console.log(this.row);
     this.$nextTick(function () {
       this.height = this.$refs.tableWrap.clientHeight;
       this.getPageList();

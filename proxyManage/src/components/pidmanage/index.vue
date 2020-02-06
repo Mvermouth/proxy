@@ -160,7 +160,6 @@ export default {
     }
     //查询淘宝可订单
     ,rowDblclick:function(row){
-      console.log(row);
       var that = this;
       var opt = {
           render: () => {

@@ -198,7 +198,7 @@ router.post("/getCommission_fee",async function(req, res, next){
 //订单列表淘宝客
 router.post("/getRelationList",async function(req, res, next){
   try{
-    var ress = await axios.get(`${baseReqUrl.robot}/api/tbk/tbk_relation_order/?page_size=${req.body.pobj.page_size}&page=${req.body.pobj.page}`,{
+    var ress = await axios.get(`${baseReqUrl.robot}/api/tbk/tbk_relation_order/?page_size=${req.body.pobj.page_size}&page=${req.body.pobj.page}&relation_id=${req.body.pobj.rid}`,{
       headers:{"Authorization": `Token ${req.body.token}`}
     });  
     res.send(ress.data);
