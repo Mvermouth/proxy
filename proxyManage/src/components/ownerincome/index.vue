@@ -53,7 +53,6 @@ export default {
   }
   ,methods:{
     onSearch:function(RID){
-      console.log(RID);
       if(!RID){
         this.$Message.warning("请输入RID");
         return;

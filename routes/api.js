@@ -180,11 +180,11 @@ router.post("/getBinding",async function(req, res, next){
 router.post("/getCommission_fee",async function(req, res, next){
   try{
     //获取reseller列表,带token过去,后端帮过滤
-    var resellers = await funcObj.getReseller(req.body.token); 
-    if(resellers){
-      var reseller = resellers;
-      req.body.pobj.reseller_id = reseller.id;
-      var ress = await axios.get(`${baseReqUrl.robot}/api/tbk/tbk_relation_order/?page_size=${req.body.pobj.page_size}&page=${req.body.pobj.page}&reseller_id=${req.body.pobj.reseller_id}`,{
+    //var resellers = await funcObj.getReseller(req.body.token); 
+    if(true){
+      //var reseller = resellers;
+      //req.body.pobj.reseller_id = reseller.id;
+      var ress = await axios.get(`${baseReqUrl.robot}/api/tbk/tbk_relation_order/?page_size=${req.body.pobj.page_size}&page=${req.body.pobj.page}&relation_id=${req.body.pobj.rid}`,{
         headers:{"Authorization": `Token ${req.body.token}`}
       });  
       res.send(ress.data);
