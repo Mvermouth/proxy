@@ -67,7 +67,7 @@ export default {
     }
     ,getPageList:async function(){
       if(!this.RID) {
-        this.$Message.warning("请输入RID");
+        this.$Message.warning("请输入RID");//2276974690
         return;
       }
       var data  = await axios.post("/api/relation_fee",{
@@ -82,15 +82,15 @@ export default {
         }
         //token:options.getCookie("key")
       });
-      if(data.data && data.data.results && data.data.results.length > 0){
+      if(data.data && data.data.content && data.data.content.length > 0){
         var pageObj = {
-            total:data.data.count
+            total:data.data.total
             ,current:this.page
             ,"page-size":this["page-size"]
         };
-        this.data = data.data.results;
+        this.data = data.data.content;
         this.pageObj = pageObj;
-      } else if(data.data && data.data.results && data.data.results.length == 0){
+      } else if(data.data && data.data.content && data.data.content.length == 0){
          this.data = [];
          this.pageObj = {};
          this.$Message.warning("没有数据");

@@ -62,15 +62,15 @@ export default {
         },
         token:options.getCookie("key")
       });
-      if(data.data && data.data.results && data.data.results.length > 0){
+      if(data.data && data.data.content && data.data.content.length > 0){
         var pageObj = {
-            total:data.data.count
+            total:data.data.total
             ,current:this.page
             ,"page-size":this["page-size"]
         };
-        this.data = data.data.results;
+        this.data = data.data.content;
         this.pageObj = pageObj;
-      } else if(data.data && data.data.results && data.data.results.length == 0){
+      } else if(data.data && data.data.content && data.data.content.length == 0){
          this.$Message.warning("没有数据");
       } else {
         this.$Message.error("查询失败");

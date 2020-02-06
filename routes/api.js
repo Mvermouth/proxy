@@ -287,7 +287,11 @@ router.post("/reseller_fee",async function(req, res, next){
           ,"pageSize":req.body.pobj.page_size
         }
       });
-      res.send(page.data);
+      if(page.data && page.data.code == 0){
+        res.send(page.data.data);
+      } else {
+        res.send(false);
+      }
     } else {
       res.send(false);
     }
@@ -311,7 +315,11 @@ router.post("/relation_fee",async function(req, res, next){
         ,"pageSize":req.body.pobj.page_size
       }
     });
-    res.send(page.data);
+    if(page.data && page.data.code == 0){
+      res.send(page.data.data);
+    } else {
+      res.send(false);
+    }    
   } catch(e){
     logger.error('错误:"%s"收益分成:"%s"',JSON.stringify(e));
     res.send(false);
