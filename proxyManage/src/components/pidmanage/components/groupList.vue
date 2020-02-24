@@ -62,7 +62,7 @@ export default {
           }
       ],
       data: []
-      ,height:"500px"
+      ,height:500
       ,selections:[]
     }
   }
