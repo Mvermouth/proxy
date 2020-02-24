@@ -25,12 +25,14 @@ router.post('/search-srv/im_group_views/page', async function(req, res, next) {
   var data = await axios.post(`${baseReqUrl.im}/im/group/page`,{
     "filters":{"OR": [{"ownerPlatformUid": {"EQ": req.body.customID}},{"ownerCustomID": {"EQ": req.body.customID}}]}
   });
+
   var owner = await axios.post(`${baseReqUrl.im}/im/contact/page`,{
     "filters":{"OR": [{"platformUid": {"EQ": req.body.customID}},{"customID": {"EQ": req.body.customID}}]}
   });
 
 	if(data && data.status == 200 && owner && owner.status == 200){
       logger.info('群主信息:"%s"',JSON.stringify(owner.data));
+      logger.info('所有群:"%s"',JSON.stringify(data.data));
       if(data.data && data.data.data.content && data.data.data.content.length > 0 && owner.data.data.content.length > 0){
 
         var platformGids = data.data.data.content.map(it => it.platformGid);
