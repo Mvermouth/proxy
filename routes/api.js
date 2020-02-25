@@ -30,7 +30,8 @@ funcObj.getReseller = async function(token){
 /*注册逻辑:
 1.验证 邀请码是否有效 invitation_code
 2.注册账号,返回id registration
-3.用id和邀请码,去 reseller 接口绑定
+3.登录获取token ,/api/auth/login/
+4.用邀请码,去 reseller 接口绑定
 */
 router.post('/reg', async function(req, res, next) {
   //验证邀请码
@@ -38,23 +39,52 @@ router.post('/reg', async function(req, res, next) {
     var msg = "";
     try{
       logger.info('邀请码:"%s"',req.body.ratio);
-      var data = await axios.get(`${baseReqUrl.robot}/api/tbk/invitation_code/?code=${req.body.ratio}&status=0&deleted=false`);
-      logger.info('邀请码请求验证结果:"%s"',data.status);
+      var data = await axios.get(`${baseReqUrl.robot}/api/tbk/invitation_code/?code=${req.body.ratio}&status=0&deleted=false`).catch(function(error){
+          logger.error('regRes:"%s"',JSON.stringify(error.response.data));     
+          msg = error.response.data;         
+      });
+      logger.info('邀请码请求验证结果:"%s"',data && data.status);
       logger.info('邀请码结果:"%s"',JSON.stringify(data.data.results));
-      if(data.status == 200 && data.data && data.data.count == 1){
+      if(data && data.status == 200 && data.data && data.data.count == 1){
         var regRes = await axios.post(`${baseReqUrl.robot}/api/auth/registration/`,{
           username:req.body.user
           ,password:req.body.password
-        });
+        }).catch(function(error){
+            logger.error('registration:"%s"',JSON.stringify(error.response.data));     
+            msg = JSON.stringify(error.response.data);     
+        })      
         if(regRes && regRes.status > 199 && regRes.status < 300){
           logger.info('注册请求验证结果:"%s"',regRes.status);
           logger.info('注册结果:"%s"',JSON.stringify(regRes.data));
+
+          //默认登录一次,为了获取token
+          var loginData = {
+            username:req.body.user
+            ,password:req.body.password
+          };
+          var loginRes = await axios.post(`${baseReqUrl.robot}/api/auth/login/`,loginData).catch(function(error){
+            logger.error('registration:"%s"',JSON.stringify(error.response.data));     
+            msg = JSON.stringify(error.response.data); 
+          });
+          logger.info('默认第一次登录结果:"%s"',JSON.stringify(loginRes.data));
+          if(!loginRes || !loginRes.data || !loginRes.data.key){
+            res.send({
+              code:-1
+              ,msg:"注册失败-" + msg
+            });
+            return;            
+          }
           var user_id = regRes.data.id;
           var lastDataReq = {
-            user_id,
+            //user_id,
             invitation_code:req.body.ratio
           };
-          var lastRes = await axios.post(`${baseReqUrl.robot}/api/tbk/reseller/`,lastDataReq);
+          var lastRes = await axios.post(`${baseReqUrl.robot}/api/tbk/reseller/`,lastDataReq,{
+            headers:{"Authorization": `Token ${loginRes.data.key}`}
+          }).catch(function(error){
+            logger.error('reseller请求验证结果:"%s"',JSON.stringify(error.response.data));
+            msg = JSON.stringify(error.response.data);  
+          });
           if(lastRes && lastRes.status > 199 && lastRes.status < 300){
             logger.info('reseller请求验证结果:"%s"',lastRes.status);
             logger.info('reseller结果:"%s"',JSON.stringify(lastRes.data));
@@ -66,18 +96,18 @@ router.post('/reg', async function(req, res, next) {
             return;
           } else {
             logger.error('reseller验证结果:"%s"',lastRes && lastRes.status);
-            msg = lastRes && lastRes.status;
+            if(!msg) msg = lastRes && lastRes.status;
           } 
         } else {
           logger.error('注册请求验证结果:"%s"',regRes && regRes.status);
-          msg = regRes && regRes.status;
+          if(!msg) msg = regRes && regRes.status;
         } 
       } else {
         logger.error('邀请码:"%s"',req.body.ratio + "-有问题");
       }      
     } catch(e){
       logger.error('注册请求验证结果:"%s"',e);
-      msg = e;
+      if(!msg) msg = e;
     }
   }
   res.send({
@@ -325,5 +355,52 @@ router.post("/relation_fee",async function(req, res, next){
     res.send(false);
   } 
 });
-
+//比率列表
+router.post("/resellerPage",async function(req, res, next){
+  try{
+    var resellers = await funcObj.getReseller(req.body.token);
+    req.body.pobj.filters.parent_id = {
+      "EQ":resellers.id
+    };
+    req.body.pobj.filters.tenant_id = {
+      "EQ":resellers.tenant_id
+    };
+    var page = await axios({
+      method: 'post'
+      ,url: `${baseReqUrl.robot}/api/tbk/reseller/page/`
+      ,headers:{"Authorization": `Token ${req.body.token}`}
+      ,data: {
+        "filters":req.body.pobj.filters
+        ,"pageNo":req.body.pobj.page
+        ,"pageSize":req.body.pobj.page_size
+      }
+    }).catch(function(error){
+      logger.error('reseller/page:"%s"',JSON.stringify(error.response.data));          
+    });
+    if(page.data && page.data.code == 0){
+      res.send(page.data.data);
+    } else {
+      res.send(false);
+    }    
+  } catch(e){
+    logger.error('错误:"%s"比率列表:"%s"',JSON.stringify(e));
+    res.send(false);
+  } 
+});
+//设置比率
+router.post("/resellerPUT",async function(req, res, next){
+  try{
+    if(req.body.data){
+      var ress = await axios.put(`${baseReqUrl.robot}/api/tbk/reseller/${req.body.data.id}/`,req.body.data,{
+        headers:{"Authorization": `Token ${req.body.token}`}
+      })  
+      res.send(true); 
+    } else {
+      res.send(false);
+    }    
+  } catch(e){
+    logger.error('错误:"%s"设置比率:"%s"',JSON.stringify(e));
+    res.send(false);
+  } 
+});
 module.exports = router;

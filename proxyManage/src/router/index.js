@@ -18,6 +18,8 @@ import Revenueshare from '@/components/revenueshare/index'
 import Ownerincome from '@/components/ownerincome/index'
 //账户管理
 import Accountmanage from '@/components/accountmanage/index'
+//比率设置
+import Ratioset from '@/components/ratioset/index'
 //b淘宝客订单
 //import Relations_order from '@/components/relations_order/index'
 import NotFound from '@/components/notFound/index'
@@ -61,6 +63,9 @@ export default new Router({
       },{
         path:"revenueshare",
         component:Revenueshare
+      },{
+        path:"ratioset",
+        component:Ratioset
       }]
     },{
       path: '/ownerincome',
